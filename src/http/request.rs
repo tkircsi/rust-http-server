@@ -4,9 +4,9 @@ use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str::{self, Utf8Error};
 
-pub struct Request {
-    path: String,
-    query_string: Option<String>,
+pub struct Request<'a> {
+    path: &'a str,
+    query_string: Option<&'a str>,
     method: Method,
 }
 
@@ -44,7 +44,7 @@ impl TryFrom<&[u8]> for Request {
 
         // Solution 2
         let (method, req) = get_next_word(req).ok_or(ParseError::InvalidRequest)?;
-        let (path, req) = get_next_word(req).ok_or(ParseError::InvalidRequest)?;
+        let (mut path, req) = get_next_word(req).ok_or(ParseError::InvalidRequest)?;
         let (protocol, _) = get_next_word(req).ok_or(ParseError::InvalidRequest)?;
 
         if protocol != "HTTP/1.1" {
@@ -53,10 +53,30 @@ impl TryFrom<&[u8]> for Request {
 
         let method: Method = method.parse()?;
 
+        /* let p: Vec<&str> = path.split('?').collect();
+        let (path, query_string) = match p.len() {
+            2 => {
+                if p[1].len() == 0 {
+                    (p[0], None)
+                }else{
+                    (p[0], Some(p[1].to_string()))
+                }
+            },
+            1 => (p[0], None),
+            _ => ("/", None),
+        }; */
+
+        let mut query_string = None;
+        if let Some(i) = path.find('?') {
+            query_string = Some(&path[i+1..]);
+            path = &path[..i];
+        }
+        
+
         Ok(Request {
             method,
-            path: "path".to_string(),
-            query_string: None,
+            path,
+            query_string,
         })
     }
 }
