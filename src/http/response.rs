@@ -1,6 +1,6 @@
 use super::status_code::SatusCode;
 use std::{
-    fmt::{Display, Formatter, Result as FmtResult},
+    //fmt::{Display, Formatter, Result as FmtResult},
     io::{Result as IoResult, Write},
     net::TcpStream,
 };

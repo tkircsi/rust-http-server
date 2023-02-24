@@ -1,6 +1,6 @@
-use crate::http::{response, ParseError, Request, Response, SatusCode};
+use crate::http::{ParseError, Request, Response, SatusCode};
 use std::convert::TryFrom;
-use std::io::{Read, Write};
+use std::io::Read;
 use std::net::TcpListener;
 
 pub struct Server {
