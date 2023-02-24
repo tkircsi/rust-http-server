@@ -20,12 +20,15 @@ impl Server {
             match listener.accept() {
                 Ok((mut stream, address)) => {
                     let mut buffer = [0; 1024];
+                    println!("{} connected.", address);
                     match stream.read(&mut buffer) {
                         Ok(_) => {
                             println!("Received a request: {}", String::from_utf8_lossy(&buffer));
                             let res: Result<Request, ParseError> = Request::try_from(&buffer[..]);
                             match res {
-                                Ok(request) => {}
+                                Ok(request) => {
+                                    dbg!(request);
+                                }
                                 Err(e) => println!("failed to parse a request: {}", e),
                             }
                             // let res: Result<Request, String> = &buffer[..].try_into();
