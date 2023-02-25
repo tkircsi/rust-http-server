@@ -15,10 +15,13 @@ impl WebsiteHandler {
         let path = format!("{}/{}", self.public_path, file_path);
         match fs::canonicalize(path) {
             Ok(path) => {
-                if path.starts_with(self.public_path) {
+                if path.starts_with(&self.public_path) {
                     fs::read_to_string(path).ok()
                 } else {
-                    println!("directory traversal attack detected: {}", path);
+                    println!(
+                        "directory traversal attack detected: {}",
+                        path.to_str().unwrap_or("")
+                    );
                     None
                 }
             }
@@ -44,6 +47,6 @@ impl Handler for WebsiteHandler {
     }
 
     fn handle_bad_request(&mut self, e: &ParseError) -> Response {
-        Response::new(SatusCode::BadRequest, None)
+        Response::new(SatusCode::BadRequest, Some(format!("Error: {}", e)))
     }
 }
